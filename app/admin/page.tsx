@@ -335,6 +335,27 @@ where $\\sigma_x = e^{-r} \\sqrt{\\hbar/2}$ and $\\sigma_p = e^{r} \\sqrt{\\hbar
     }
   }
 
+  async function deleteTestQuestions() {
+    if (!perms.isAdmin || !user) return;
+    const confirmed = confirm("Delete ALL test questions? This will remove questions whose titles match the test data list.");
+    if (!confirmed) return;
+    setGenerating(true);
+    setError("");
+    try {
+      const supabase = createClient();
+      const { error: err } = await supabase
+        .from("questions")
+        .delete()
+        .in("title", TEST_TITLES);
+      if (err) throw err;
+      alert("Test questions deleted.");
+    } catch (e: unknown) {
+      setError((e as Error).message || "Failed to delete test questions");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   const filteredUsers = users.filter((u) => {
     if (roleFilter !== "all" && u.role !== roleFilter) return false;
     if (search) {
@@ -574,6 +595,14 @@ where $\\sigma_x = e^{-r} \\sqrt{\\hbar/2}$ and $\\sigma_p = e^{r} \\sqrt{\\hbar
                   disabled={generating}
                 >
                   {generating ? "Inserting…" : "Insert into DB"}
+                </button>
+                <button
+                  className="btn-primary"
+                  style={{ height: "32px", padding: "0 14px", fontSize: "12px", background: "var(--danger)" }}
+                  onClick={() => deleteTestQuestions()}
+                  disabled={generating}
+                >
+                  Delete All Test Questions
                 </button>
               </div>
               {testPreview.length > 0 && (
