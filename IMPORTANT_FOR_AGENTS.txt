@@ -1,0 +1,314 @@
+You are working on **Phyzic**, a physics-focused community Q&A platform inspired by knowledge-sharing systems like Physics Stack Exchange, with strong support for mathematical discussion, moderation, realtime interaction, and scalable community systems.
+
+Your role is NOT to redesign or rewrite the project blindly.
+Your role is to improve the platform carefully, incrementally, and professionally while preserving architecture quality and long-term maintainability.
+
+# Project Overview
+
+Phyzic is built with:
+
+* Next.js App Router
+* React
+* TypeScript
+* Tailwind CSS
+* Supabase (Auth, Postgres, Storage, Realtime)
+
+Core systems already implemented include:
+
+* Questions & answers
+* Voting & reputation
+* Comments/discussions
+* Draft autosave
+* Notifications
+* Messaging/chat
+* User profiles
+* Presence system
+* Connection/follow systems
+* Moderation/admin systems
+* Reports/warnings/bans
+* MathJax + Markdown + LaTeX
+* Theme support
+
+The project already has many features.
+The priority is now QUALITY, CONSISTENCY, MAINTAINABILITY, and USER EXPERIENCE.
+
+---
+
+# Critical Development Philosophy
+
+The project must avoid:
+
+* feature bloat
+* unnecessary rewrites
+* architecture drift
+* giant refactors
+* inconsistent UI
+* AI-generated overengineering
+
+Do NOT add random abstractions or rewrite stable systems unless explicitly required.
+
+Focus on:
+
+* refinement
+* consistency
+* UX quality
+* maintainability
+* performance
+* information architecture
+* scalability
+
+---
+
+# VERY IMPORTANT — How You Must Work
+
+## 1. Make Minimal, Targeted Changes
+
+Only modify files directly related to the requested task.
+
+Avoid:
+
+* touching unrelated files
+* rewriting components unnecessarily
+* changing architecture without reason
+* large-scale refactors
+
+Prefer:
+
+* isolated edits
+* reusable improvements
+* incremental enhancement
+
+---
+
+## 2. Preserve Existing Logic
+
+Do NOT break:
+
+* auth flows
+* realtime subscriptions
+* database logic
+* moderation systems
+* role permissions
+* UI responsiveness
+* theme support
+
+Maintain backward compatibility whenever possible.
+
+---
+
+## 3. Prioritize Core UX Over New Features
+
+The most important experience is:
+
+* asking questions
+* reading questions
+* writing answers
+* navigating discussions
+* discovering quality content
+
+Improving these systems is higher priority than adding more social features.
+
+---
+
+## 4. UI/UX Standards
+
+The UI should feel:
+
+* modern
+* clean
+* readable
+* consistent
+* math-friendly
+* responsive
+* professional
+
+Prioritize:
+
+* spacing consistency
+* typography hierarchy
+* clean layouts
+* good empty states
+* smooth hover/focus states
+* accessibility
+* responsive behavior
+* reduced visual clutter
+
+Avoid:
+
+* excessive gradients
+* random colors
+* oversized shadows
+* inconsistent paddings
+* overly flashy effects
+
+Design should feel focused and engineering-oriented.
+
+---
+
+# Architecture Standards
+
+Maintain:
+
+* clean folder structure
+* reusable components
+* centralized types
+* consistent naming
+* modular logic
+* scalable patterns
+
+Prefer:
+
+* composition over duplication
+* reusable UI primitives
+* small components
+* clear separation of concerns
+
+Avoid:
+
+* giant components
+* duplicated business logic
+* deeply nested state
+* hardcoded values
+* unnecessary dependencies
+
+---
+
+# AI Coding Rules
+
+## NEVER:
+
+* rewrite entire files unnecessarily
+* generate placeholder/mock implementations unless requested
+* create fake backend logic
+* invent APIs or database schemas
+* remove existing features
+* replace stable systems without reason
+
+## ALWAYS:
+
+* inspect surrounding code before editing
+* preserve conventions already used in the project
+* keep code production-ready
+* optimize for readability and maintainability
+* prefer simple solutions over clever ones
+
+---
+
+# Performance Expectations
+
+Optimize:
+
+* unnecessary rerenders
+* realtime subscription leaks
+* loading states
+* query efficiency
+* component rendering cost
+* hydration issues
+* large client-side state
+
+Use lazy loading and memoization only when justified.
+
+Avoid premature optimization.
+
+---
+
+# Content & Community Direction
+
+This is NOT just a social platform.
+
+The platform should prioritize:
+
+* high-quality knowledge
+* rigorous answers
+* readability
+* discoverability
+* structured discussions
+* educational value
+
+Future improvements should lean toward:
+
+* better search
+* duplicate detection
+* semantic organization
+* answer quality systems
+* intelligent tagging
+* knowledge discovery
+
+---
+
+# AI Features Philosophy
+
+AI should enhance the platform infrastructure, not become a gimmick chatbot.
+
+Good AI integrations:
+
+* duplicate question detection
+* semantic search
+* tag suggestions
+* answer quality analysis
+* formatting assistance
+* math parsing
+* related-topic recommendations
+* moderation assistance
+
+Avoid:
+
+* generic AI chat widgets
+* unnecessary AI features
+* distracting assistant interfaces
+
+---
+
+# Code Quality Requirements
+
+Code must be:
+
+* production-ready
+* typed properly
+* readable
+* maintainable
+* scalable
+
+Prefer:
+
+* explicit naming
+* predictable logic
+* clean state management
+* simple APIs
+
+Avoid:
+
+* unnecessary complexity
+* magic behavior
+* huge utility files
+* tightly coupled systems
+
+---
+
+# Response Behavior
+
+When completing tasks:
+
+* work directly
+* avoid unnecessary explanations
+* do not summarize obvious changes
+* do not output long reasoning
+* avoid conversational filler
+
+Focus on high-quality implementation with minimal noise.
+
+---
+
+# Priority Order
+
+Always prioritize in this order:
+
+1. Stability
+2. Maintainability
+3. UX quality
+4. Readability
+5. Performance
+6. Scalability
+7. New features
+
+Never sacrifice architecture quality for speed.

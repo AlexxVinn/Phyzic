@@ -1,0 +1,68 @@
+/* ─── Leaderboard ─── */
+.leaderboard-root { padding: 0 0 20px; }
+
+.lb-controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 10px;
+}
+.lb-tabs {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--surface-2);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.lb-tab {
+  border: none;
+  background: transparent;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.08s ease, color 0.08s ease;
+}
+.lb-tab:hover { color: var(--text); }
+.lb-tab.is-active { color: var(--primary); background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+.lb-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+.lb-filter { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 11px; font-weight: 650; }
+.lb-filter select {
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.lb-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.lb-table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 750;
+}
+.lb-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-subtle); }
+.lb-table tbody tr:hover td { background: var(--surface-2); }
+.lb-rank-col { width: 40px; }
+.lb-rank { font-size: 11px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.lb-rank-top { font-size: 12px; font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+.lb-user-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; transition: color 0.08s ease; }
+.lb-user-link:hover { color: var(--primary); }
+.lb-avatar-wrap { display: flex; }
+.lb-name { font-weight: 650; }
+.lb-num { text-align: right; font-variant-numeric: tabular-nums; }
+.lb-rep { font-weight: 800; }

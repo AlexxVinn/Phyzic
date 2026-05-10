@@ -1,0 +1,104 @@
+html { font-size: 14px; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+body {
+  margin: 0; min-height: 100vh;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  color: var(--text);
+  line-height: 1.5; font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--primary); }
+
+::selection { background: color-mix(in oklab, var(--primary) 14%, transparent); }
+
+:focus-visible { outline: 1.5px solid color-mix(in oklab, var(--primary) 50%, transparent); outline-offset: 1px; }
+
+/* ─── Math / technical content ─── */
+mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+mjx-container[display="true"], mjx-container[jax="SVG"][display="true"] {
+  display: block !important;
+  margin: 20px 0 !important;
+  padding: 16px 20px !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-left: 3px solid color-mix(in oklab, var(--primary) 30%, transparent) !important;
+  border-radius: var(--radius) !important;
+  background: color-mix(in oklab, var(--surface-2) 80%, transparent) !important;
+  overflow-x: auto !important;
+}
+
+code, pre {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.93em;
+}
+pre {
+  margin: 6px 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  overflow: auto;
+}
+
+.theorem, .derivation, .proof {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid color-mix(in oklab, var(--primary) 30%, transparent);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--surface) 92%, var(--accent-soft));
+}
+.theorem > .heading, .derivation > .heading, .proof > .heading {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 750;
+  color: var(--text-muted);
+  margin: 0 0 4px;
+}
+
+/* ─── App shell ─── */
+.app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ─── Shell ─── */
+.shell {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr) 260px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: calc(100vh - 38px);
+  gap: 0;
+}
+html.sidebar-collapsed .shell { grid-template-columns: 44px minmax(0, 1fr) 260px; }
+
+/* ─── Responsive ─── */
+@media (max-width: 1100px) {
+  .shell { grid-template-columns: 156px minmax(0, 1fr); }
+  html.sidebar-collapsed .shell { grid-template-columns: 48px minmax(0, 1fr); }
+  .right-col { display: none; }
+}
+
+@media (max-width: 720px) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .sidebar { display: none; }
+  .navbar-search-wrap { max-width: none; }
+  .navbar-inner { padding: 0 10px; }
+  .main-feed { padding: 10px; }
+  .main { padding: 10px; }
+  .q-card { grid-template-columns: 1fr; gap: 6px; padding: 8px 10px; }
+  .q-card-stats { grid-template-rows: none; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-top: 0; }
+  .q-card-stat { text-align: left; }
+  .q-card-title-row { align-items: flex-start; }
+  .question-detail-wrap { grid-template-columns: 1fr; }
+  .feed-head { flex-direction: column; gap: 6px; }
+  .settings-layout { grid-template-columns: 1fr; }
+  .settings-nav { position: static; }
+  .profile-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-shadow: var(--shadow);
+  --color-shadow-hover: var(--shadow-hover);
+  --color-radius: var(--radius);
+  --color-radius-sm: var(--radius-sm);
+  --color-navbar-bg: var(--navbar-bg);
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-line: var(--chart-line);
+  --color-chart-accent: var(--chart-accent);
+  --color-chart-fill: var(--chart-fill);
+  --color-vote-up: var(--vote-up);
+  --color-vote-down: var(--vote-down);
+  --color-solved: var(--solved);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@import "./styles/variables.css";
+@import "./styles/layout.css";
+@import "./styles/sidebar.css";
+@import "./styles/header.css";
+@import "./styles/feed.css";
+@import "./styles/question.css";
+@import "./styles/profile.css";
+@import "./styles/chat.css";
+@import "./styles/leaderboard.css";
+@import "./styles/settings.css";
+@import "./styles/utilities.css";
+@import "./styles/ask.css";

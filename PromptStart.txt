@@ -1,0 +1,1 @@
+Read @PROJECT_CONTEXT.md  and @PROJECT_DESCRIPTION.md  and follow the instructions in @IMPORTANT_FOR_AGENTS.txt  and do this:
