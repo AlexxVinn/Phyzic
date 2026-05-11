@@ -53,7 +53,7 @@ export default function QuestionCard({ question, onTagClick }: QuestionCardProps
         }
       }}
     >
-      {/* Left stats column */}
+      {/* Stats row */}
       <div className="qc-stats" aria-label="Question statistics">
         <div className={`qc-stat ${question.score !== 0 ? "has-val" : ""}`}>
           <span className="qc-stat-num">{question.score}</span>
@@ -68,7 +68,7 @@ export default function QuestionCard({ question, onTagClick }: QuestionCardProps
           <span className="qc-stat-num">{question.answer_count}</span>
           <span className="qc-stat-lbl">{question.solved ? "accepted" : question.answer_count === 1 ? "answer" : "answers"}</span>
         </div>
-        <div className="qc-stat qc-stat-views">
+        <div className={`qc-stat qc-stat-views ${question.view_count >= 1000 ? "has-val" : ""}`}>
           <span className="qc-stat-num">{views}</span>
           <span className="qc-stat-lbl">views</span>
         </div>

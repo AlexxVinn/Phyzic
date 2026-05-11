@@ -199,11 +199,10 @@
 
 /* ─── Question Card ─── */
 .qc {
-  display: grid;
-  grid-template-columns: 72px minmax(0, 1fr);
-  gap: 14px;
-  align-items: start;
-  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border-subtle);
   background: var(--surface);
   cursor: pointer;
@@ -214,40 +213,40 @@
 .qc:focus-visible { outline: 1.5px solid color-mix(in oklab, var(--primary) 50%, transparent); outline-offset: -1px; }
 .qc.is-solved { border-left: 3px solid color-mix(in oklab, var(--solved) 55%, transparent); }
 
-/* Stats column */
+/* Stats row */
 .qc-stats {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 2px;
+  gap: 6px;
+  flex-shrink: 0;
 }
 .qc-stat {
-  text-align: center;
-  padding: 4px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
   border-radius: 4px;
-  line-height: 1.15;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface);
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
 }
 .qc-stat-num {
-  display: block;
-  font-size: 15px;
-  font-weight: 750;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--text-muted);
 }
 .qc-stat-lbl {
-  display: block;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--text-muted);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-top: 1px;
+  font-weight: 500;
 }
 .qc-stat.has-val .qc-stat-num { color: var(--text); }
+.qc-stat.is-solved { border-color: color-mix(in oklab, var(--solved) 30%, transparent); background: color-mix(in oklab, var(--solved) 6%, transparent); }
 .qc-stat.is-solved .qc-stat-num { color: var(--solved); }
 .qc-stat.is-solved .qc-stat-lbl { color: var(--solved); }
-.qc-stat-views .qc-stat-num { font-size: 13px; font-weight: 700; }
-.qc-check { color: var(--solved); flex-shrink: 0; vertical-align: middle; margin-right: 2px; }
+.qc-stat-views .qc-stat-num { font-size: 12px; }
+.qc-check { color: var(--solved); flex-shrink: 0; vertical-align: middle; margin-right: 1px; }
 
 /* Content area */
 .qc-content { min-width: 0; }
@@ -329,6 +328,7 @@
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: 2px;
 }
 
 .qc-tags {
@@ -558,9 +558,8 @@
   .main-feed { padding: 12px; }
   .feed-hero { flex-direction: column; gap: 10px; }
   .feed-hero-title { font-size: 18px; }
-  .qc { grid-template-columns: 1fr; gap: 8px; padding: 12px 14px; }
-  .qc-stats { flex-direction: row; gap: 12px; }
-  .qc-stat { text-align: left; }
+  .qc { gap: 6px; padding: 10px 12px; }
+  .qc-stats { gap: 4px; }
   .feed-toolbar { flex-direction: column; align-items: stretch; }
   .feed-search { min-width: 0; width: 100%; }
 }
