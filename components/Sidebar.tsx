@@ -5,11 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "./AuthProvider";
 import { createClient } from "@/lib/supabase";
-import { fmtShortDate } from "@/lib/utils";
+import { fmtShortDate, fmtRep } from "@/lib/utils";
+import RoleBadge from "./RoleBadge";
 
 const NAV_ITEMS = [
   { href: "/", label: "Questions", icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  )},
+  { href: "/ask", label: "Ask Question", icon: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
   )},
   { href: "/leaderboard", label: "Leaderboard", icon: (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
@@ -38,7 +42,7 @@ export default function Sidebar() {
       .from("tags")
       .select("name,question_count")
       .order("question_count", { ascending: false })
-      .limit(8)
+      .limit(6)
       .then(({ data }) => {
         if (data) setTopTags(data);
       });
@@ -81,60 +85,66 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar" aria-label="Navigation">
+      {/* Logo */}
+      <div className="sb-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <span className="sb-logo-text">Phyzic</span>
+      </div>
+
+      {/* Reputation card */}
       {auth.profile && (
-        <div className="sidebar-user">
-          <div className="sidebar-user-row">
-            <span className="sidebar-user-label">Reputation</span>
-            <strong>{rep.toLocaleString()}</strong>
+        <div className="sb-rep-card">
+          <div className="sb-rep-header">
+            <span className="sb-rep-label">Reputation</span>
+            <span className="sb-rep-value">{rep.toLocaleString()}</span>
           </div>
-          <div className="xp-track">
-            <div className="xp-fill" style={{ width: `${Math.min((rep % 1000) / 10, 100)}%` }} />
+          <div className="sb-rep-bar">
+            <div className="sb-rep-fill" style={{ width: `${Math.min((rep % 1000) / 10, 100)}%` }} />
+          </div>
+          <div className="sb-rep-meta">
+            <span className="sb-rep-role"><RoleBadge role={auth.profile.role} size="sm" /></span>
           </div>
         </div>
       )}
-      <nav className="sidebar-nav">
+
+      {/* Navigation */}
+      <nav className="sb-nav">
         {NAV_ITEMS.map((item) => (
           <Link
             key={item.href}
-            className={`sidebar-link ${pathname === item.href ? "is-active" : ""}`}
+            className={`sb-nav-link ${pathname === item.href ? "is-active" : ""}`}
             href={item.href}
           >
-            <span className="sidebar-link-icon">{item.icon}</span>
-            <span className="sidebar-link-text">{item.label}</span>
+            <span className="sb-nav-icon">{item.icon}</span>
+            <span className="sb-nav-text">{item.label}</span>
           </Link>
         ))}
       </nav>
 
-      {topTags.length > 0 && (
-        <div className="sidebar-section">
-          <div className="sidebar-section-title">Top tags</div>
-          <ul className="hot-list">
-            {topTags.map((t) => (
-              <li key={t.name}>
-                <Link href={`/?tag=${encodeURIComponent(t.name)}`} className="text-left w-full block">
-                  {t.name}
-                </Link>
-                <span className="hot-count">{t.question_count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div className="sidebar-section">
-        <div className="sidebar-section-title">Recent activity</div>
-        <ul className="activity-list">
+      {/* Recent activity */}
+      <div className="sb-section">
+        <div className="sb-section-title">Recent Activity</div>
+        <ul className="sb-activity">
           {activity.length > 0 ? (
-            activity.map((a) => (
+            activity.slice(0, 4).map((a) => (
               <li key={a.id}>
-                <span className="activity-text">{a.text}</span>
-                <span className="activity-time">{fmtShortDate(a.created_at)}</span>
+                <span className="sb-activity-dot" />
+                <div className="sb-activity-content">
+                  <span className="sb-activity-text">{a.text}</span>
+                  <span className="sb-activity-time">{fmtShortDate(a.created_at)}</span>
+                </div>
               </li>
             ))
           ) : (
-            <li className="text-muted text-xs">No recent activity</li>
+            <li className="sb-muted">No recent activity</li>
           )}
         </ul>
+      </div>
+
+      {/* Feedback card */}
+      <div className="sb-feedback-card">
+        <div className="sb-feedback-title">New to Phyzic?</div>
+        <p className="sb-feedback-text">Search before asking, define your variables, and typeset math with $...$ and $$...$$</p>
       </div>
     </aside>
   );

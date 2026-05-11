@@ -7,10 +7,11 @@ import Sidebar from "@/components/Sidebar";
 import QuestionCard from "@/components/QuestionCard";
 import EmptyState from "@/components/EmptyState";
 import RoleBadge from "@/components/RoleBadge";
+import Avatar from "@/components/Avatar";
 import { useQuestionsFeed, useTags } from "@/hooks/useQuestions";
 import { useAuth } from "@/components/AuthProvider";
-import { fmtRep } from "@/lib/utils";
-import type { SortMode } from "@/lib/questions";
+import { fmtRep, fmtShortDate } from "@/lib/utils";
+import type { SortMode, Question } from "@/lib/questions";
 
 const SORT_LABELS: Record<SortMode, string> = {
   newest: "Newest",
@@ -52,7 +53,6 @@ export default function HomePage() {
 
   const activeTags = tagFilter ? [tagFilter] : [];
 
-  // Combine tags from loaded questions with tags from the API
   const questionTagMap = new Map<string, number>();
   questions.forEach((q) => {
     q.tags.forEach((t) => {
@@ -68,26 +68,31 @@ export default function HomePage() {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 
-  const featuredDiscussions = [...questions]
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
-    .slice(0, 6);
-
-  const trendingTopics = allCombinedTags.slice(0, 14);
+  const unansweredQuestions = questions.filter(q => q.answer_count === 0).slice(0, 5);
+  const topContributors = Array.from(
+    new Map<string, NonNullable<Question["author"]>>(
+      questions
+        .filter(q => q.author)
+        .map(q => [q.author!.id, q.author!])
+    ).values()
+  ).slice(0, 5);
 
   return (
     <div className="app">
       <Navbar onToggleSidebar={() => setSidebarCollapsed((v) => !v)} />
       <div className="shell">
         <Sidebar />
+
+        {/* ─── CENTER CONTENT ─── */}
         <main className="main-feed">
-          <div className="feed-head">
-            <div className="feed-head-text">
-              <h1 className="feed-title">Physics Knowledge Exchange</h1>
-              <p className="feed-sub">Rigorous Q&A for physicists. Ask, answer, and learn.</p>
+          <div className="feed-hero">
+            <div className="feed-hero-text">
+              <h1 className="feed-hero-title">Physics Knowledge Exchange</h1>
+              <p className="feed-hero-sub">A rigorous Q&A platform for physicists, researchers, and students. Ask questions, share knowledge, and advance understanding.</p>
             </div>
-            <Link href="/ask" className="btn-ask">
+            <Link href="/ask" className="feed-cta">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-              Ask question
+              Ask Question
             </Link>
           </div>
 
@@ -103,60 +108,64 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
-            <div className="feed-toolbar-right">
+            <div className="feed-toolbar-actions">
+              {activeTags.length > 0 && (
+                <div className="feed-active-filters">
+                  {activeTags.map((t) => (
+                    <button
+                      key={t}
+                      className="feed-filter-tag is-active"
+                      onClick={() => setTagFilter(null)}
+                      type="button"
+                    >
+                      {t}
+                      <span className="feed-filter-x">&times;</span>
+                    </button>
+                  ))}
+                </div>
+              )}
               <input
                 type="search"
-                className="feed-search-input"
-                placeholder="Search questions…"
+                className="feed-search"
+                placeholder="Search questions\u2026"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
 
-          {activeTags.length > 0 && (
-            <div className="feed-filterbar" role="region" aria-label="Active filters">
-              <span className="feed-filterbar-label">Filter</span>
-              {activeTags.map((t) => (
-                <button
-                  key={t}
-                  className="tag is-active"
-                  onClick={() => setTagFilter(null)}
-                  type="button"
-                  aria-label={`Clear tag filter ${t}`}
-                >
-                  {t}
-                  <span aria-hidden="true" className="feed-filterbar-x">×</span>
-                </button>
-              ))}
-            </div>
-          )}
-
           {error && (
-            <div className="rounded p-3 text-sm bg-surface border border-red-300 text-red-600 mb-4">
+            <div className="feed-error">
               {error}
-              <button className="ml-2 underline font-medium" onClick={refresh}>Retry</button>
+              <button className="feed-error-retry" onClick={refresh}>Retry</button>
             </div>
           )}
 
           {loading && questions.length === 0 && (
-            <div className="skeleton-wrap">
+            <div className="feed-skeletons">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="skeleton-card">
-                  <div className="skeleton-line skeleton-lg" style={{ width: "60%" }} />
-                  <div className="skeleton-line" style={{ width: "90%" }} />
-                  <div className="skeleton-line" style={{ width: "40%" }} />
+                <div key={i} className="feed-skeleton">
+                  <div className="feed-skeleton-stats">
+                    <div className="feed-skeleton-stat" />
+                    <div className="feed-skeleton-stat" />
+                    <div className="feed-skeleton-stat" />
+                  </div>
+                  <div className="feed-skeleton-body">
+                    <div className="feed-skeleton-line" style={{ width: "65%" }} />
+                    <div className="feed-skeleton-line" style={{ width: "90%" }} />
+                    <div className="feed-skeleton-line" style={{ width: "40%" }} />
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
-          <div className="question-feed">
+          <div className="feed-list">
             {questions.map((q) => (
               <QuestionCard key={q.id} question={q} onTagClick={handleTagClick} />
             ))}
             {questions.length === 0 && !loading && (
-              <div className="q-row q-row-empty">
+              <div className="feed-empty">
                 <EmptyState
                   title={search ? "No matches" : tagFilter ? `No "${tagFilter}" questions` : "No questions yet"}
                   message={search ? "Try a different search term." : tagFilter ? "Try another tag." : "Be the first to ask!"}
@@ -166,75 +175,88 @@ export default function HomePage() {
           </div>
 
           {hasMore && (
-            <div className="mt-4 flex justify-center">
+            <div className="feed-pagination">
               <button
-                className="btn-secondary"
+                className="feed-pagination-btn"
                 onClick={loadMore}
                 disabled={loading}
               >
                 {loading ? (
-                  <span className="flex items-center gap-2">
+                  <span className="feed-loading-inline">
                     <span className="spinner" />
-                    Loading…
+                    Loading\u2026
                   </span>
-                ) : "Load more"}
+                ) : "Load more questions"}
               </button>
             </div>
           )}
         </main>
 
+        {/* ─── RIGHT SIDEBAR ─── */}
         <aside className="right-col">
-          <div className="card">
-            <div className="card-title">Featured</div>
-            <div className="rc-list rc-list-compact">
-              {featuredDiscussions.slice(0, 5).map((q) => (
-                <div key={q.id} className="rc-item">
-                  <Link href={`/question/${q.id}`} className="rc-item-title">{q.title}</Link>
-                  <div className="rc-item-meta">
-                    <span>{fmtRep(q.score)} votes</span>
-                    <span>{q.answer_count} ans</span>
-                    <span>{q.view_count >= 1000 ? (q.view_count / 1000).toFixed(1).replace(/\.0$/, "") + "k" : q.view_count} views</span>
-                  </div>
-                </div>
-              ))}
-              {featuredDiscussions.length === 0 && <div className="rc-muted">No featured questions yet</div>}
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="card-title">Topics</div>
-            <div className="rc-tag-grid">
-              {trendingTopics.slice(0, 10).map((t) => (
+          {/* Top Tags */}
+          <div className="rc-card">
+            <div className="rc-card-title">Top Tags</div>
+            <div className="rc-tags">
+              {allCombinedTags.slice(0, 8).map((t) => (
                 <button
                   key={t.name}
-                  className="rc-tag"
+                  className="rc-tag-btn"
                   type="button"
                   onClick={() => setTagFilter(t.name)}
                 >
-                  {t.name}
+                  <span className="rc-tag-name">{t.name}</span>
                   <span className="rc-tag-count">{t.count}</span>
                 </button>
               ))}
-              {trendingTopics.length === 0 && <div className="rc-muted">No tags yet</div>}
+              {allCombinedTags.length === 0 && <div className="rc-muted">No tags yet</div>}
             </div>
           </div>
 
-          <div className="card card-subtle">
-            <div className="rc-list rc-list-compact">
-              <div className="rc-guideline"><strong>Search first</strong> — avoid duplicates</div>
-              <div className="rc-guideline"><strong>Define variables</strong> — include assumptions &amp; units</div>
-              <div className="rc-guideline"><strong>Typeset math</strong> {"\u2014 use \\$…\\$ and \\$\\$…\\$\\$"}</div>
+          {/* Unanswered */}
+          <div className="rc-card">
+            <div className="rc-card-title">Unanswered</div>
+            <div className="rc-list">
+              {unansweredQuestions.length > 0 ? unansweredQuestions.map((q) => (
+                <Link key={q.id} href={`/question/${q.id}`} className="rc-item">
+                  <span className="rc-item-title">{q.title}</span>
+                  <span className="rc-item-meta">{fmtRep(q.score)} votes &middot; {q.view_count} views</span>
+                </Link>
+              )) : (
+                <div className="rc-muted">All questions have answers</div>
+              )}
             </div>
           </div>
 
-          {auth.profile && (
-            <div className="card card-subtle">
-              <div className="rc-list rc-list-compact">
-                <div className="rc-kv"><span className="rc-k">Reputation</span><span className="rc-v">{fmtRep(auth.profile.reputation)}</span></div>
-                <div className="rc-kv"><span className="rc-k">Role</span><span className="rc-v"><RoleBadge role={auth.profile.role} size="sm" /></span></div>
-              </div>
+          {/* Contributors */}
+          <div className="rc-card">
+            <div className="rc-card-title">Top Contributors</div>
+            <div className="rc-list">
+              {topContributors.length > 0 ? topContributors.map((a) => (
+                <Link key={a.id} href={`/profile?u=${encodeURIComponent(a.username || "")}`} className="rc-contributor">
+                  <Avatar url={a.avatar_url || null} name={a.full_name || a.username || "User"} size={20} />
+                  <div className="rc-contributor-info">
+                    <span className="rc-contributor-name">{a.full_name || a.username}</span>
+                    <span className="rc-contributor-rep">{fmtRep(a.reputation)} rep</span>
+                  </div>
+                  {a.role && a.role !== "user" && <RoleBadge role={a.role} size="sm" />}
+                </Link>
+              )) : (
+                <div className="rc-muted">No contributors yet</div>
+              )}
             </div>
-          )}
+          </div>
+
+          {/* Guidelines */}
+          <div className="rc-card rc-card-subtle">
+            <div className="rc-card-title">Community Guidelines</div>
+            <div className="rc-guidelines">
+              <div className="rc-guideline"><strong>Search first</strong> &mdash; avoid duplicates</div>
+              <div className="rc-guideline"><strong>Define variables</strong> &mdash; include assumptions &amp; units</div>
+              <div className="rc-guideline"><strong>Typeset math</strong> &mdash; use $...$ and $$...$$</div>
+              <div className="rc-guideline"><strong>Cite sources</strong> &mdash; reference papers &amp; textbooks</div>
+            </div>
+          </div>
         </aside>
       </div>
     </div>
