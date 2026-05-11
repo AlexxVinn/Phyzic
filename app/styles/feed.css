@@ -225,8 +225,8 @@
   gap: 4px;
   padding: 3px 8px;
   border-radius: 4px;
-  border: 1px solid var(--border-subtle);
-  background: var(--surface);
+  border: none;
+  background: transparent;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   white-space: nowrap;
@@ -242,11 +242,17 @@
   font-weight: 500;
 }
 .qc-stat.has-val .qc-stat-num { color: var(--text); }
-.qc-stat.is-solved { border-color: color-mix(in oklab, var(--solved) 30%, transparent); background: color-mix(in oklab, var(--solved) 6%, transparent); }
+.qc-stat.is-solved { background: transparent; }
 .qc-stat.is-solved .qc-stat-num { color: var(--solved); }
 .qc-stat.is-solved .qc-stat-lbl { color: var(--solved); }
 .qc-stat-views .qc-stat-num { font-size: 12px; }
 .qc-check { color: var(--solved); flex-shrink: 0; vertical-align: middle; margin-right: 1px; }
+
+.qc-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 8px 0;
+}
 
 /* Content area */
 .qc-content { min-width: 0; }

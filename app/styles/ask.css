@@ -4,8 +4,8 @@
 
 /* ─── Page Container ─── */
 .ask-page {
-  max-width: 1120px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 0 0 40px;
 }
 

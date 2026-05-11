@@ -342,7 +342,7 @@ export default function QuestionDetailPage() {
     return (
       <div className="app">
         <Navbar />
-        <div className="shell">
+        <div className="shell shell-no-right">
           <Sidebar />
           <main className="main">
             <div className="skeleton-wrap p-6">
@@ -360,7 +360,7 @@ export default function QuestionDetailPage() {
     return (
       <div className="app">
         <Navbar />
-        <div className="shell">
+        <div className="shell shell-no-right">
           <Sidebar />
           <main className="main">
             <div className="p-6 text-sm text-muted">
@@ -382,7 +382,7 @@ export default function QuestionDetailPage() {
   return (
     <div className="app">
       <Navbar />
-      <div className="shell">
+      <div className="shell shell-no-right">
         <Sidebar />
         <main className="main">
           <div className="question-detail">

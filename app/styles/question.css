@@ -723,31 +723,36 @@
 .md-body .md-math-display {
   display: block;
   text-align: center;
-  margin: 16px 0;
-  padding: 12px 16px;
-  background: var(--surface-2);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-subtle);
-  border-left: 3px solid color-mix(in oklab, var(--primary) 25%, transparent);
-  overflow-x: auto;
+  margin: 5px 0;
+  padding: 0;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--border-subtle) 82%, var(--border));
+  border-left: 2px solid color-mix(in oklab, var(--primary) 22%, transparent);
+  background: color-mix(in oklab, var(--surface-2) 94%, var(--surface));
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .md-body .md-math-inline {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
 /* MathJax container overrides */
-mjx-container[display="true"],
-mjx-container[jax="SVG"][display="true"] {
+
+.md-body .md-math-display mjx-container[data-mjx-container] {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  background: transparent !important;
+}
+
+.md-body .md-math-display mjx-container[data-mjx-container] > svg {
   display: block !important;
-  margin: 16px 0 !important;
-  padding: 12px 16px !important;
-  border: 1px solid var(--border-subtle) !important;
-  border-left: 3px solid color-mix(in oklab, var(--primary) 25%, transparent) !important;
-  border-radius: var(--radius-sm) !important;
-  background: var(--surface-2) !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
+  margin: 0 auto !important;
+  max-width: 100% !important;
 }
 
 mjx-container {

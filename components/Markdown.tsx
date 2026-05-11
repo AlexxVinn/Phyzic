@@ -7,7 +7,7 @@ function mdToHtml(text: string): string {
   if (!text) return "";
 
   const segments: { html: string; isRaw: boolean }[] = [];
-  const tokenRe = /```(\w+)?\n[\s\S]*?```|`[^`]+`|\$\$[\s\S]*?\$\$|(?<!\$)\$(?!\$)[^$\n]+\$(?!\$)|\\\[[\s\S]*?\\\]|\\\([^)]+?\\\)/g;
+  const tokenRe = /```(\w+)?\n[\s\S]*?```|`[^`]+`|\$\$\$\$[\s\S]*?\$\$\$\$|\$\$[\s\S]*?\$\$|(?<!\$)\$(?!\$)[^$\n]+\$(?!\$)|\\\[[\s\S]*?\\\]|\\\([^)]+?\\\)/g;
 
   let lastIdx = 0;
   let match: RegExpExecArray | null;
@@ -29,6 +29,11 @@ function mdToHtml(text: string): string {
     } else if (m.startsWith("`") && !m.startsWith("```")) {
       segments.push({
         html: `<code class="md-inline-code">${escapeHtml(m.slice(1, -1))}</code>`,
+        isRaw: true,
+      });
+    } else if (m.startsWith("$$$$")) {
+      segments.push({
+        html: `<div class="md-math md-math-display">\\[${escapeHtml(m.slice(4, -4))}\\]</div>`,
         isRaw: true,
       });
     } else if (m.startsWith("$$")) {
@@ -93,7 +98,13 @@ function mdToHtml(text: string): string {
     output.push(paragraphs.join("\n"));
   }
 
-  return output.join("\n");
+  let result = output.join("\n");
+  // Merge <p>...</p> + inline-math + <p>...</p> so inline math stays in the text flow
+  result = result.replace(
+    /<\/p>\s*(<span[^>]*md-math-inline[^>]*>[\s\S]*?<\/span>)\s*<p(?:\s[^>]*)?>/g,
+    "$1"
+  );
+  return result;
 }
 
 interface MarkdownProps {

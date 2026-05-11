@@ -28,8 +28,21 @@ mjx-container[display="true"], mjx-container[jax="SVG"][display="true"] {
   border: 1px solid var(--border-subtle) !important;
   border-left: 3px solid color-mix(in oklab, var(--primary) 30%, transparent) !important;
   border-radius: var(--radius) !important;
-  background: color-mix(in oklab, var(--surface-2) 80%, transparent) !important;
+  background: color-mix(in oklab, var(--surface-3) 86%, transparent) !important;
   overflow-x: auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Inline math: keep in text flow, add subtle darker chip background */
+mjx-container:not([display="true"]):not([jax="SVG"][display="true"]) {
+  display: inline-block !important;
+  vertical-align: -0.1em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--surface-3) 78%, transparent);
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 code, pre {
@@ -77,6 +90,13 @@ pre {
   gap: 0;
 }
 html.sidebar-collapsed .shell { grid-template-columns: 48px minmax(0, 1fr) 280px; }
+
+.shell.shell-no-right {
+  grid-template-columns: 200px minmax(0, 1fr);
+}
+html.sidebar-collapsed .shell.shell-no-right {
+  grid-template-columns: 48px minmax(0, 1fr);
+}
 
 /* ─── Responsive ─── */
 @media (max-width: 1100px) {
