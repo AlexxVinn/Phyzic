@@ -113,6 +113,15 @@ function MessageThread({
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const auth = useAuth();
+  const prevMsgCountRef = useRef(0);
+
+  // Autoscroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messages.length > prevMsgCountRef.current) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevMsgCountRef.current = messages.length;
+  }, [messages.length, bottomRef]);
 
   const handleSend = useCallback(async () => {
     if (!body.trim() || sending) return;
@@ -120,10 +129,14 @@ function MessageThread({
     try {
       await send(body);
       setBody("");
+      // Scroll to bottom after sending
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
     } finally {
       setSending(false);
     }
-  }, [body, sending, send]);
+  }, [body, sending, send, bottomRef]);
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -223,6 +236,10 @@ export default function ChatDock() {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const activeConv = conversations.find((c) => c.id === activeId);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [panelSize, setPanelSize] = useState<{ w: number; h: number } | null>(null);
+  const dragging = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   useEffect(() => {
     const handler = () => setOpen((v) => !v);
@@ -238,6 +255,48 @@ export default function ChatDock() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
+  const onResizeMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragging.current = true;
+    const rect = panelRef.current?.getBoundingClientRect();
+    dragStart.current = {
+      x: e.clientX,
+      y: e.clientY,
+      w: rect?.width || 320,
+      h: rect?.height || 420,
+    };
+    document.body.style.cursor = "nwse-resize";
+    document.body.style.userSelect = "none";
+  }, []);
+
+  useEffect(() => {
+    function onMouseMove(e: MouseEvent) {
+      if (!dragging.current) return;
+      const dx = dragStart.current.x - e.clientX;
+      const dy = dragStart.current.y - e.clientY;
+      const w = Math.min(560, Math.max(280, dragStart.current.w + dx));
+      const h = Math.min(window.innerHeight * 0.8, Math.max(300, dragStart.current.h + dy));
+      setPanelSize({ w, h });
+    }
+    function onMouseUp() {
+      if (!dragging.current) return;
+      dragging.current = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    }
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+    return () => {
+      document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseup", onMouseUp);
+    };
+  }, []);
+
+  const panelStyle = panelSize
+    ? { width: panelSize.w, height: panelSize.h }
+    : undefined;
+
   return (
     <div className={`chat-dock ${open ? "is-open" : ""}`}>
       <button
@@ -252,7 +311,23 @@ export default function ChatDock() {
         {totalUnread > 0 && <span className="chat-dock-toggle-badge">{totalUnread > 9 ? "9+" : totalUnread}</span>}
       </button>
 
-      <div className="chat-dock-panel">
+      <div
+        className="chat-dock-panel"
+        ref={panelRef}
+        style={panelStyle}
+      >
+        <button
+          type="button"
+          className="chat-dock-resize-btn"
+          onMouseDown={onResizeMouseDown}
+          title="Drag to resize"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <line x1="9" y1="1" x2="1" y2="9" />
+            <line x1="9" y1="4" x2="4" y2="9" />
+            <line x1="9" y1="7" x2="7" y2="9" />
+          </svg>
+        </button>
         {activeId && activeConv ? (
           <MessageThread
             conversationId={activeId}

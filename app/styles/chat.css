@@ -177,6 +177,7 @@
   display: none;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 .chat-dock.is-open .chat-dock-panel {
@@ -243,7 +244,13 @@
   flex: 1;
   overflow-y: auto;
   padding: 2px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
+.chat-dock-list::-webkit-scrollbar { width: 4px; }
+.chat-dock-list::-webkit-scrollbar-track { background: transparent; }
+.chat-dock-list::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; border: 1px solid transparent; background-clip: padding-box; }
+.chat-dock-list::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 .chat-dock-item {
   display: flex;
@@ -419,7 +426,14 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
+.chat-dock-messages::-webkit-scrollbar { width: 4px; }
+.chat-dock-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-dock-messages::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; border: 1px solid transparent; background-clip: padding-box; }
+.chat-dock-messages::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 
 .chat-dock-load-more {
   align-self: center;
@@ -557,7 +571,35 @@
 .chat-dock-send:hover { background: var(--primary-hover); }
 .chat-dock-send:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ─── Responsive chat dock ─── */
+/* ─── Resize button (top-left corner) ─── */
+.chat-dock-resize-btn {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: nwse-resize;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.12s ease, background 0.12s ease;
+  padding: 0;
+}
+.chat-dock-panel:hover .chat-dock-resize-btn {
+  opacity: 0.5;
+}
+.chat-dock-resize-btn:hover {
+  opacity: 1 !important;
+  color: var(--primary);
+  background: var(--surface-2);
+}
+
 @media (max-width: 720px) {
   .chat-dock { bottom: 8px; right: 8px; }
   .chat-dock-panel { width: calc(100vw - 24px); height: 60vh; }

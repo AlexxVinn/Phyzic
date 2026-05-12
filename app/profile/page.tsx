@@ -337,7 +337,7 @@ function ProfilePageInner() {
     return (
       <div className="app">
         <Navbar />
-        <div className="shell">
+        <div className="shell shell-no-right">
           <Sidebar />
           <main className="main">
             <div className="profile-root">
@@ -356,7 +356,7 @@ function ProfilePageInner() {
   return (
     <div className="app">
       <Navbar />
-      <div className="shell">
+      <div className="shell shell-no-right">
         <Sidebar />
         <main className="main">
           <div className="profile-root">

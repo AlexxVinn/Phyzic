@@ -35,6 +35,14 @@ export function useConversations() {
     load();
   }, [load]);
 
+  // Poll every 5 seconds as a fallback alongside realtime
+  useEffect(() => {
+    const interval = setInterval(() => {
+      load();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [load]);
+
   useEffect(() => {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     let active = true;
@@ -163,12 +171,22 @@ export function useMessages(conversationId: string | null) {
     };
   }, [supabase, conversationId]);
 
+  // Poll every 5 seconds as a fallback alongside realtime
+  useEffect(() => {
+    if (!conversationId) return;
+    const interval = setInterval(() => {
+      load();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [conversationId, load]);
+
   const send = useCallback(
     async (body: string, metadata?: Record<string, unknown>) => {
       if (!conversationId || !body.trim()) return;
       await sendMessage(conversationId, body.trim(), metadata);
+      await load();
     },
-    [conversationId]
+    [conversationId, load]
   );
 
   const loadMore = useCallback(async () => {
@@ -183,7 +201,7 @@ export function useMessages(conversationId: string | null) {
     setHasMore(data.length === 50);
   }, [conversationId, hasMore, messages]);
 
-  return { messages, loading, hasMore, send, loadMore, bottomRef };
+  return { messages, loading, hasMore, send, loadMore, bottomRef, refresh: load };
 }
 
 export function useEnsureConversation() {

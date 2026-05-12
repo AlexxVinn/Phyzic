@@ -1,40 +1,68 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { subscribe } from "diagnostics_channel";
+import { NextResponse, type NextRequest } from "next/server";
+import { getSupabaseAnonKey, getSupabaseUrl, safeRedirectPath } from "@/lib/supabase-config";
 
-const supabaseUrl = "https://gysfiojtcvjejkhrqgky.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5c2Zpb2p0Y3ZqZWpraHJxZ2t5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNjcxNjcsImV4cCI6MjA5Mzk0MzE2N30.JxWNF54TEUF2Oh8fxiIYJZDiIX1iVpJQa7L13qdRrC0";
+function pathRequiresSession(pathname: string): boolean {
+  if (pathname.startsWith("/auth/")) return false;
+  const prefixes = ["/settings", "/ask", "/admin", "/moderator", "/messages"];
+  if (prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
+    return true;
+  }
+  return /^\/question\/[^/]+\/edit$/.test(pathname);
+}
 
-export function proxy(req: NextRequest) {
-  const res = NextResponse.next({ request: req });
+function isLoginOrSignup(pathname: string): boolean {
+  return pathname === "/login" || pathname === "/signup";
+}
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+export async function proxy(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(getSupabaseUrl(), getSupabaseAnonKey(), {
     cookies: {
       getAll() {
-        return req.cookies.getAll();
+        return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, headers) {
+        supabaseResponse = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) => {
-          res.cookies.set(name, value, options);
+          supabaseResponse.cookies.set(name, value, options);
         });
+        if (headers) {
+          Object.entries(headers).forEach(([key, value]) => {
+            supabaseResponse.headers.set(key, value);
+          });
+        }
       },
     },
   });
 
-  // Note: proxy runs synchronously; we can't use async auth checks here without async middleware.
-  // For route guards, we rely on client-side checks + server-side RLS.
-  // We do protect admin/moderator routes via cookie presence check (lightweight).
-  const pathname = req.nextUrl.pathname;
-  const protectedRoutes = ["/admin", "/moderator"];
-  const isProtected = protectedRoutes.some((r) => pathname.startsWith(r));
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (isProtected) {
-    const hasAuth = req.cookies.has("sb-gysfiojtcvjejkhrqgky-auth-token") || req.cookies.has("sb-gysfiojtcvjejkhrqgky-auth-token.0");
-    if (!hasAuth) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+  const pathname = request.nextUrl.pathname;
+
+  if (user && isLoginOrSignup(pathname)) {
+    const raw = request.nextUrl.searchParams.get("redirect");
+    const dest = safeRedirectPath(raw);
+    return NextResponse.redirect(new URL(dest, request.url));
   }
 
-  return res;
+  if (!user && pathRequiresSession(pathname)) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set(
+      "redirect",
+      `${pathname}${request.nextUrl.search}`
+    );
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return supabaseResponse;
 }
+
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};

@@ -127,7 +127,7 @@ export default function SettingsPage() {
   return (
     <div className="app">
       <Navbar />
-      <div className="shell">
+      <div className="shell shell-no-right">
         <Sidebar />
         <main className="main">
           <div className="settings-root">

@@ -69,7 +69,7 @@ export default function LeaderboardPage() {
   return (
     <div className="app">
       <Navbar />
-      <div className="shell">
+      <div className="shell shell-no-right">
         <Sidebar />
         <main className="main">
           <div className="feed-head">

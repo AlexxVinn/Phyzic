@@ -1,7 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase";
+
+function playNotifSound() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.15);
+  } catch {
+    // AudioContext not available or blocked
+  }
+}
 
 export interface Notification {
   id: string;
@@ -19,6 +38,7 @@ export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const prevUnreadRef = useRef(0);
 
   const load = useCallback(async () => {
     const { data: sessionData } = await supabase.auth.getSession();
@@ -37,14 +57,29 @@ export function useNotifications() {
       .limit(50);
     if (!error) {
       const list = (data || []) as Notification[];
+      const newUnread = list.filter((n) => !n.read).length;
       setNotifications(list);
-      setUnreadCount(list.filter((n) => !n.read).length);
+      setUnreadCount((prev) => {
+        if (newUnread > prevUnreadRef.current && prevUnreadRef.current > 0) {
+          playNotifSound();
+        }
+        prevUnreadRef.current = newUnread;
+        return newUnread;
+      });
     }
     setLoading(false);
   }, [supabase]);
 
   useEffect(() => {
     load();
+  }, [load]);
+
+  // Poll every 3 seconds as a fallback alongside realtime
+  useEffect(() => {
+    const interval = setInterval(() => {
+      load();
+    }, 3000);
+    return () => clearInterval(interval);
   }, [load]);
 
   useEffect(() => {
