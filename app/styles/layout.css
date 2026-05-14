@@ -112,9 +112,9 @@ html.sidebar-collapsed .shell.shell-no-right {
   .navbar-inner { padding: 0 10px; }
   .main-feed { padding: 12px; }
   .main { padding: 12px; }
-  .qc { grid-template-columns: 1fr; gap: 8px; padding: 12px 14px; }
-  .qc-stats { flex-direction: row; gap: 12px; padding-top: 0; }
-  .qc-stat { text-align: left; }
+  .qc { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px 12px 14px; }
+  .qc-rail { flex-direction: row; gap: 4px; padding-top: 0; }
+  .qc-rail-cell { flex: 1; padding: 6px 4px; }
   .qc-title-row { align-items: flex-start; }
   .question-detail-wrap { grid-template-columns: 1fr; }
   .feed-hero { flex-direction: column; gap: 10px; }
