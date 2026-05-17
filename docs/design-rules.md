@@ -1,5 +1,7 @@
 # Design Rules
 
+**Vision, positioning, and anti-patterns:** [platform-identity.md](./platform-identity.md). This document is **tactical**: tokens, spacing, and implementation defaults.
+
 ## Visual Identity
 
 - **Academic aesthetic** — engineering-oriented, not social-media

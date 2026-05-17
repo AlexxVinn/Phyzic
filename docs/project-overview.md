@@ -1,6 +1,6 @@
 # Phyzic — Project Overview
 
-Physics-focused community Q&A platform with first-class LaTeX support. Think Stack Exchange for physicists, with real-time messaging and academic collaboration.
+Physics-focused community Q&A with first-class LaTeX, messaging, and collaboration. **Product direction and UX stance:** [platform-identity.md](./platform-identity.md).
 
 ## Tech Stack
 

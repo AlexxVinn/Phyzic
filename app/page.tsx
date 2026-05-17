@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import QuestionCard from "@/components/QuestionCard";
 import EmptyState from "@/components/EmptyState";
-import RoleBadge from "@/components/RoleBadge";
-import Avatar from "@/components/Avatar";
+import FeedDiscoveryAside from "@/components/FeedDiscoveryAside";
 import { useQuestionsFeed, useTags } from "@/hooks/useQuestions";
-import { useAuth } from "@/components/AuthProvider";
-import { fmtRep, fmtShortDate } from "@/lib/utils";
-import type { SortMode, Question } from "@/lib/questions";
+import { buildAuthorIdentities, buildFeedLayout, classifyThreadStates } from "@/lib/feedPresentation";
+import type { SortMode } from "@/lib/questions";
 
 const SORT_LABELS: Record<SortMode, string> = {
   newest: "Newest",
@@ -21,7 +19,6 @@ const SORT_LABELS: Record<SortMode, string> = {
 };
 
 export default function HomePage() {
-  const auth = useAuth();
   const [sort, setSort] = useState<SortMode>("newest");
   const [search, setSearch] = useState("");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
@@ -68,14 +65,21 @@ export default function HomePage() {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 
-  const unansweredQuestions = questions.filter(q => q.answer_count === 0).slice(0, 5);
-  const topContributors = Array.from(
-    new Map<string, NonNullable<Question["author"]>>(
-      questions
-        .filter(q => q.author)
-        .map(q => [q.author!.id, q.author!])
-    ).values()
-  ).slice(0, 5);
+  const authorIdentities = useMemo(() => buildAuthorIdentities(questions), [questions]);
+
+  const { featured, items: feedItems } = useMemo(() => buildFeedLayout(questions), [questions]);
+
+  const feedPulseStats = useMemo(() => {
+    const authorIds = new Set<string>();
+    questions.forEach((q) => {
+      if (q.author) authorIds.add(q.author.id);
+    });
+    return {
+      authors: authorIds.size,
+      openThreads: questions.filter((q) => q.answer_count > 0).length,
+      unanswered: questions.filter((q) => q.answer_count === 0).length,
+    };
+  }, [questions]);
 
   return (
     <div className="app">
@@ -160,10 +164,39 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="feed-list">
-            {questions.map((q) => (
-              <QuestionCard key={q.id} question={q} onTagClick={handleTagClick} />
-            ))}
+          <div className="feed-stream">
+            {featured && questions.length > 0 && (
+              <section className="feed-featured-block" aria-label="Featured thread">
+                <p className="feed-section-kicker">High-signal thread</p>
+                <QuestionCard
+                  question={featured}
+                  variant="featured"
+                  states={classifyThreadStates(featured)}
+                  authorIdentity={
+                    featured.author ? authorIdentities.get(featured.author.id) : undefined
+                  }
+                  onTagClick={handleTagClick}
+                />
+              </section>
+            )}
+
+            <div className="feed-list">
+              {feedItems.map((item) => (
+                <QuestionCard
+                  key={item.question.id}
+                  question={item.question}
+                  variant={item.variant}
+                  states={item.states}
+                  authorIdentity={
+                    item.question.author
+                      ? authorIdentities.get(item.question.author.id)
+                      : undefined
+                  }
+                  onTagClick={handleTagClick}
+                />
+              ))}
+            </div>
+
             {questions.length === 0 && !loading && (
               <div className="feed-empty">
                 <EmptyState
@@ -192,72 +225,13 @@ export default function HomePage() {
           )}
         </main>
 
-        {/* ─── RIGHT SIDEBAR ─── */}
-        <aside className="right-col">
-          {/* Top Tags */}
-          <div className="rc-card">
-            <div className="rc-card-title">Top Tags</div>
-            <div className="rc-tags">
-              {allCombinedTags.slice(0, 8).map((t) => (
-                <button
-                  key={t.name}
-                  className="rc-tag-btn"
-                  type="button"
-                  onClick={() => setTagFilter(t.name)}
-                >
-                  <span className="rc-tag-name">{t.name}</span>
-                  <span className="rc-tag-count">{t.count}</span>
-                </button>
-              ))}
-              {allCombinedTags.length === 0 && <div className="rc-muted">No tags yet</div>}
-            </div>
-          </div>
-
-          {/* Unanswered */}
-          <div className="rc-card">
-            <div className="rc-card-title">Unanswered</div>
-            <div className="rc-list">
-              {unansweredQuestions.length > 0 ? unansweredQuestions.map((q) => (
-                <Link key={q.id} href={`/question/${q.id}`} className="rc-item">
-                  <span className="rc-item-title">{q.title}</span>
-                  <span className="rc-item-meta">{fmtRep(q.score)} votes &middot; {q.view_count} views</span>
-                </Link>
-              )) : (
-                <div className="rc-muted">All questions have answers</div>
-              )}
-            </div>
-          </div>
-
-          {/* Contributors */}
-          <div className="rc-card">
-            <div className="rc-card-title">Top Contributors</div>
-            <div className="rc-list">
-              {topContributors.length > 0 ? topContributors.map((a) => (
-                <Link key={a.id} href={`/profile?u=${encodeURIComponent(a.username || "")}`} className="rc-contributor">
-                  <Avatar url={a.avatar_url || null} name={a.full_name || a.username || "User"} size={20} />
-                  <div className="rc-contributor-info">
-                    <span className="rc-contributor-name">{a.full_name || a.username}</span>
-                    <span className="rc-contributor-rep">{fmtRep(a.reputation)} rep</span>
-                  </div>
-                  {a.role && a.role !== "user" && <RoleBadge role={a.role} size="sm" />}
-                </Link>
-              )) : (
-                <div className="rc-muted">No contributors yet</div>
-              )}
-            </div>
-          </div>
-
-          {/* Guidelines */}
-          <div className="rc-card rc-card-subtle">
-            <div className="rc-card-title">Community Guidelines</div>
-            <div className="rc-guidelines">
-              <div className="rc-guideline"><strong>Search first</strong> &mdash; avoid duplicates</div>
-              <div className="rc-guideline"><strong>Define variables</strong> &mdash; include assumptions &amp; units</div>
-              <div className="rc-guideline"><strong>Typeset math</strong> &mdash; use $...$ and $$...$$</div>
-              <div className="rc-guideline"><strong>Cite sources</strong> &mdash; reference papers &amp; textbooks</div>
-            </div>
-          </div>
-        </aside>
+        <FeedDiscoveryAside
+          questions={questions}
+          allCombinedTags={allCombinedTags}
+          onTagClick={handleTagClick}
+          feedPulseStats={feedPulseStats}
+          loading={loading}
+        />
       </div>
     </div>
   );

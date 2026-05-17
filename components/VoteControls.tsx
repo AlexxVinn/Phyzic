@@ -5,15 +5,17 @@ interface VoteControlsProps {
   userVote: number;
   onVote: (v: 1 | -1) => void;
   size?: "sm" | "md" | "lg";
+  /** Tighter rail for question threads (between sm/md). */
+  compact?: boolean;
 }
 
-export default function VoteControls({ score, userVote, onVote, size = "md" }: VoteControlsProps) {
-  const btnSize = size === "sm" ? 28 : size === "lg" ? 44 : 36;
-  const iconSize = size === "sm" ? 14 : size === "lg" ? 22 : 18;
-  const scoreSize = size === "sm" ? 14 : size === "lg" ? 24 : 18;
+export default function VoteControls({ score, userVote, onVote, size = "md", compact }: VoteControlsProps) {
+  const btnSize = compact ? 30 : size === "sm" ? 28 : size === "lg" ? 44 : 36;
+  const iconSize = compact ? 15 : size === "sm" ? 14 : size === "lg" ? 22 : 18;
+  const scoreSize = compact ? 14 : size === "sm" ? 14 : size === "lg" ? 24 : 18;
 
   return (
-    <div className="vote-wrap">
+    <div className={`vote-wrap${compact ? " vote-wrap--compact" : ""}`}>
       <button
         type="button"
         className={`vote-btn ${userVote === 1 ? "is-active-up" : ""}`}

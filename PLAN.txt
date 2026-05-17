@@ -1,0 +1,149 @@
+PRIORITY 1 — Make it feel alive
+
+This matters more than polish.
+
+Add:
+
+active discussion indicators
+live feed movement
+hover interactions
+reply previews
+activity heat
+dynamic counters
+user presence
+animated transitions
+
+Without this, users subconsciously think:
+
+“Nobody uses this.”
+
+And then they leave.
+
+PRIORITY 2 — Rebuild the post cards completely
+
+Your cards need:
+
+stronger hierarchy
+bigger titles
+preview structure
+richer metadata
+visual rhythm
+content differentiation
+
+A great question card should instantly show:
+
+importance
+difficulty
+activity
+quality
+topic
+
+Right now all posts feel identical.
+
+PRIORITY 3 — Introduce a visual language
+
+You need a recognizable aesthetic.
+
+Ideas:
+
+soft equation grids in background
+animated field lines
+subtle starfield/noise
+glowing mathematical accents
+elegant blue/violet scientific palette
+physics-inspired geometry
+glass + deep-space hybrid styling
+
+But carefully.
+Do NOT overdo effects.
+
+PRIORITY 4 — Fix content realism
+
+Your fake content is killing perception.
+
+Seed with:
+
+realistic physics discussions
+believable users
+proper tags
+varying post quality
+real academic tone
+
+This alone can double perceived quality.
+
+PRIORITY 5 — Improve feed composition
+
+You need rhythm.
+
+Right now:
+card
+card
+card
+card
+
+boring.
+
+Introduce:
+
+featured question
+compact cards
+expanded discussion
+equation-focused post
+trending module
+paper preview
+highlighted answer
+
+Vary the feed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Step 3
+
+Add:
+
+motion system
+microinteractions
+hover depth
+animated counters
+transition consistency
+
+Goal:
+make the interface feel responsive and alive.
+
+Step 4
+
+Build:
+
+true visual identity
+atmospheric physics aesthetic
+premium scientific tone
+
+Goal:
+make the site memorable.
+
+Step 5
+
+Improve:
+
+onboarding
+posting UX
+editor experience
+contribution dopamine
+
+Goal:
+increase posting likelihood.

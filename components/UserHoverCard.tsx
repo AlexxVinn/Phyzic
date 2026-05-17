@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import Avatar from "./Avatar";
 import RoleBadge from "./RoleBadge";
 import { useAuth } from "./AuthProvider";
@@ -18,6 +19,24 @@ export interface HoverUser {
   role?: any;
 }
 
+const CARD_W = 260;
+const CARD_H = 132;
+
+function clampPosition(rect: DOMRect) {
+  const gap = 8;
+  let left = rect.left;
+  let top = rect.bottom + gap;
+  if (left + CARD_W > window.innerWidth - 12) {
+    left = window.innerWidth - CARD_W - 12;
+  }
+  if (top + CARD_H > window.innerHeight - 12) {
+    top = rect.top - CARD_H - gap;
+  }
+  left = Math.max(12, left);
+  top = Math.max(12, top);
+  return { left, top };
+}
+
 export default function UserHoverCard({
   user,
   children,
@@ -26,19 +45,32 @@ export default function UserHoverCard({
   children: ReactNode;
 }) {
   const auth = useAuth();
+  const triggerRef = useRef<HTMLSpanElement>(null);
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pos, setPos] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
   const [profile, setProfile] = useState<any>(null);
   const [presence, setPresence] = useState<{ status: PresenceStatus; last_seen_at: string | null } | null>(null);
   const [counts, setCounts] = useState<{ questions: number; answers: number; followers: number } | null>(null);
+  const [mounted, setMounted] = useState(false);
   const loadingRef = useRef(false);
 
   const username = user?.username || "";
   const name = user?.full_name || user?.username || "User";
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     setCounts(null);
   }, [user?.id]);
+
+  const updatePosition = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setPos(clampPosition(rect));
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -116,104 +148,81 @@ export default function UserHoverCard({
     };
   }, [open, user?.id]);
 
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    const onScroll = () => updatePosition();
+    window.addEventListener("scroll", onScroll, true);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll, true);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [open, updatePosition]);
+
   const status = presence?.status || "offline";
   const dotColor = status === "online" ? "#22c55e" : status === "away" ? "#f59e0b" : "#64748b";
 
-  return (
-    <span
-      style={{ display: "inline-flex", position: "relative" }}
-      onMouseEnter={(e) => {
-        setPos({ x: e.clientX, y: e.clientY });
-        setOpen(true);
-      }}
-      onMouseMove={(e) => {
-        if (!open) return;
-        setPos({ x: e.clientX, y: e.clientY });
-      }}
-      onMouseLeave={() => setOpen(false)}
-    >
-      {children}
-
-      {open && user?.id ? (
-        <div
-          role="dialog"
-          aria-label="User preview"
-          style={{
-            position: "fixed",
-            left: Math.min(pos.x + 14, window.innerWidth - 280),
-            top: Math.min(pos.y + 14, window.innerHeight - 140),
-            width: 260,
-            padding: 12,
-            borderRadius: 12,
-            opacity: 1,
-            background: "linear-gradient(135deg, rgb(24, 24, 24), rgb(31, 31, 31))",
-            border: "1px solid var(--border)",
-            boxShadow: "0 18px 45px rgba(0,0,0,.22)",
-            zIndex: 50,
-            pointerEvents: "none",
-          }}
-        >
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <div style={{ position: "relative" }}>
+  const card =
+    open && user?.id && mounted ? (
+      <div
+        role="dialog"
+        aria-label="User preview"
+        className="user-hover-card"
+        style={{ left: pos.left, top: pos.top }}
+      >
+        <div className="user-hover-card-inner">
+          <div className="user-hover-card-head">
+            <div className="user-hover-card-avatar">
               <Avatar url={(profile?.avatar_url ?? user.avatar_url) || null} name={name} size={34} />
               <span
                 aria-hidden="true"
-                style={{
-                  position: "absolute",
-                  right: -1,
-                  bottom: -1,
-                  width: 10,
-                  height: 10,
-                  borderRadius: 999,
-                  background: dotColor,
-                  border: "2px solid var(--surface-1)",
-                }}
+                className="user-hover-card-dot"
+                style={{ background: dotColor }}
               />
             </div>
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
-                <span style={{ fontWeight: 800, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
+            <div className="user-hover-card-id">
+              <div className="user-hover-card-name-row">
+                <span className="user-hover-card-name">{name}</span>
                 {profile?.role && profile.role !== "user" ? <RoleBadge role={profile.role} size="sm" /> : null}
               </div>
-              <div style={{ fontSize: 12, color: "var(--text-muted)" }}>@{username}</div>
+              <span className="user-hover-card-handle">@{username}</span>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 10, fontSize: 12, color: "var(--text-muted)" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-              {status === "online" ? "Online" : status === "away" ? "Away" : "Offline"}
-            </span>
-            <span style={{ marginLeft: "auto" }}>
-              {fmtRep(profile?.reputation ?? user.reputation ?? 0)} rep
-            </span>
+          <div className="user-hover-card-row">
+            <span>{status === "online" ? "Online now" : status === "away" ? "Away" : "Offline"}</span>
+            <span className="user-hover-card-rep">{fmtRep(profile?.reputation ?? user.reputation ?? 0)} rep</span>
           </div>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 10, fontSize: 12, color: "var(--text-muted)" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} title="Questions">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              {counts?.questions ?? "–"}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }} title="Answers">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M12 19V5" />
-                <path d="M6 11l6-6 6 6" />
-              </svg>
-              {counts?.answers ?? "–"}
-            </span>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: "auto" }} title="Followers">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="8.5" cy="7" r="4" />
-                <path d="M20 8v6" />
-                <path d="M23 11h-6" />
-              </svg>
-              {counts?.followers ?? "–"}
-            </span>
+          <div className="user-hover-card-stats">
+            <span title="Questions">{counts?.questions ?? "–"} questions</span>
+            <span title="Answers">{counts?.answers ?? "–"} answers</span>
+            <span title="Followers">{counts?.followers ?? "–"} followers</span>
           </div>
         </div>
-      ) : null}
-    </span>
+      </div>
+    ) : null;
+
+  return (
+    <>
+      <span
+        ref={triggerRef}
+        className="user-hover-trigger"
+        onMouseEnter={() => {
+          updatePosition();
+          setOpen(true);
+        }}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => {
+          updatePosition();
+          setOpen(true);
+        }}
+        onBlur={() => setOpen(false)}
+      >
+        {children}
+      </span>
+      {mounted && card ? createPortal(card, document.body) : null}
+    </>
   );
 }

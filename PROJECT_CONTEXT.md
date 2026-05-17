@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Phyzic is a **physics-focused Q&A and academic collaboration platform**. Think Stack Exchange meets Discord for physicists, but with a highly technical, utility-focused UI (no social-media aesthetics). It supports LaTeX/MathJax, reputation, roles, moderation, real-time direct messaging, peer connections, and notifications.
+Phyzic is a **physics-focused Q&A and academic collaboration platform** — discussion-led threads and math at the center; DMs and connections support collaboration without replacing the forum. Product vision, positioning, and UX anti-patterns: `docs/platform-identity.md`. It supports LaTeX/MathJax, reputation, roles, moderation, real-time direct messaging, peer connections, and notifications.
 
 - **Repo**: Next.js 16 App Router, React 19, TypeScript, Tailwind CSS v4
 - **Backend**: Supabase (PostgreSQL + Auth + Realtime)

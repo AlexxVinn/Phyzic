@@ -393,7 +393,7 @@ export default function QuestionDetailPage() {
                   score={question.score}
                   userVote={userVotes[`question:${question.id}`] || 0}
                   onVote={(v) => handleVote("question", question.id, v)}
-                  size="lg"
+                  compact
                 />
                 <div className="qd-content">
                   <div className="qd-head">
@@ -413,13 +413,24 @@ export default function QuestionDetailPage() {
                     </div>
                   </div>
 
-                  <div className="qd-meta">
-                    <span className="qd-meta-item">Asked {fmtShortDate(question.created_at)}</span>
-                    <span className="qd-meta-dot" />
-                    <span className="qd-meta-item">{question.view_count} views</span>
-                    <span className="qd-meta-dot" />
-                    <span className="qd-meta-item">{question.answer_count} {question.answer_count === 1 ? "answer" : "answers"}</span>
-                    {question.solved && <><span className="qd-meta-dot" /><span className="qd-solved-badge">Solved</span></>}
+                  <div className="qd-meta" role="list">
+                    <span className="qd-chip" role="listitem">
+                      <span className="qd-chip-k">Asked</span>
+                      <span className="qd-chip-v">{fmtShortDate(question.created_at)}</span>
+                    </span>
+                    <span className="qd-chip" role="listitem">
+                      <span className="qd-chip-k">Views</span>
+                      <span className="qd-chip-v">{question.view_count.toLocaleString()}</span>
+                    </span>
+                    <span className="qd-chip" role="listitem">
+                      <span className="qd-chip-k">Answers</span>
+                      <span className="qd-chip-v">{question.answer_count}</span>
+                    </span>
+                    {question.solved && (
+                      <span className="qd-chip qd-chip--solved" role="listitem">
+                        <span className="qd-chip-v">Solved</span>
+                      </span>
+                    )}
                   </div>
 
                   <div className="qd-body">
@@ -484,7 +495,7 @@ export default function QuestionDetailPage() {
                         score={a.score}
                         userVote={userVotes[`answer:${a.id}`] || 0}
                         onVote={(v) => handleVote("answer", a.id, v)}
-                        size="md"
+                        size="sm"
                       />
                       <div className="qd-content">
                         {a.accepted && (
