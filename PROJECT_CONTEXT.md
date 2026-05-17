@@ -103,13 +103,11 @@ hooks/
   useConnections.ts    # Connection status, pending requests, peers
   useMessaging.ts      # Conversations, messages, presence heartbeat
 
-SQL migrations (run manually in Supabase SQL Editor):
-  20260210000000_profiles.sql
-  20260510000000_profile_system.sql
-  20260511000000_role_system.sql
-  20260511000001_question_system.sql
-  20260512000000_complete_system.sql   # notifications, triggers, search, reports
-  20260513000000_social_system.sql    # connections, conversations, messages, presence, blocks
+supabase/
+  migrations/          # SQL migrations (run in filename order — see supabase/README.md)
+  README.md
+
+docs/                  # Architecture and design documentation
 ```
 
 ---
@@ -246,7 +244,7 @@ Before implementing anything new:
 3. Check `hooks/` for existing data hooks.
 4. Check `components/` for reusable UI pieces.
 5. Match existing visual style: compact, dense, technical, minimal borders.
-6. If adding DB tables, write a migration file with the date prefix format: `YYYYMMDD000000_feature.sql`.
+6. If adding DB tables, add `supabase/migrations/YYYYMMDD000000_feature.sql` and document it in `docs/database-schema.md`.
 7. If modifying DB schema, also update `lib/` and `hooks/` types.
 8. Run `npm run build` before declaring done — TypeScript is strict.
 

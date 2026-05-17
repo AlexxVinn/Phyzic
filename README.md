@@ -1,4 +1,20 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Phyzic
+
+Physics-focused Q&A platform — Next.js + Supabase.
+
+## Project layout
+
+| Path | Purpose |
+|------|---------|
+| `app/` | Next.js App Router pages and styles |
+| `components/` | React UI |
+| `lib/` | Supabase clients, types, API helpers |
+| `hooks/` | Data hooks |
+| `supabase/migrations/` | PostgreSQL schema (run in order) |
+| `docs/` | Architecture and design docs |
+| `PROJECT_CONTEXT.md` | AI / contributor onboarding |
+
+Database setup: see [`supabase/README.md`](supabase/README.md).
 
 ## Getting Started
 

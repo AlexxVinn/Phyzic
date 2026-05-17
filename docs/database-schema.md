@@ -1,17 +1,17 @@
 # Database Schema
 
-Supabase PostgreSQL. All tables have RLS enabled. Migrations are run manually in Supabase SQL Editor.
+Supabase PostgreSQL. All tables have RLS enabled. Migration files live in `supabase/migrations/` and are applied in filename order (see `supabase/README.md`).
 
 ## Migration Files (chronological order)
 
 | File | Contents |
 |------|----------|
-| `20260210000000_profiles.sql` | profiles, reputation_history, questions, answers, votes, handle_new_user trigger, vote/accept reputation triggers |
-| `20260510000000_profile_system.sql` | follows, saved_posts, messages (simple), user_badges |
-| `20260511000000_role_system.sql` | user_role/user_status enums, role+status columns on profiles, warnings, suspensions, audit_logs, deleted_content, reports |
-| `20260511000001_question_system.sql` | increment_question_views, update_answer_count trigger, accept_answer RPC |
-| `20260512000000_complete_system.sql` | notifications table + auto-notify triggers (answer, comment, vote, accept, connection, message) |
-| `20260513000000_social_system.sql` | connections, conversations, conversation_participants, messages (replaces simple), user_presence, blocks, get_or_create_conversation RPC |
+| `supabase/migrations/20260210000000_profiles.sql` | profiles, reputation_history, questions, answers, votes, handle_new_user trigger, vote/accept reputation triggers |
+| `supabase/migrations/20260510000000_profile_system.sql` | follows, saved_posts, messages (simple), user_badges |
+| `supabase/migrations/20260511000000_role_system.sql` | user_role/user_status enums, role+status columns on profiles, warnings, suspensions, audit_logs, deleted_content, reports |
+| `supabase/migrations/20260511000001_question_system.sql` | increment_question_views, update_answer_count trigger, accept_answer RPC |
+| `supabase/migrations/20260512000000_complete_system.sql` | notifications table + auto-notify triggers (answer, comment, vote, accept, connection, message) |
+| `supabase/migrations/20260513000000_social_system.sql` | connections, conversations, conversation_participants, messages (replaces simple), user_presence, blocks, get_or_create_conversation RPC |
 
 ## Enums
 
